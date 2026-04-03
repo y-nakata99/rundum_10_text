@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ランダム英数字10文字ジェネレーター</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: "Inter", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #f3f6fb;
+        color: #1e293b;
+      }
+
+      .card {
+        width: min(92vw, 560px);
+        padding: 2rem;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 0.8rem;
+        font-size: 1.4rem;
+      }
+
+      p {
+        margin: 0;
+        color: #475569;
+      }
+
+      .value {
+        margin: 1.4rem 0;
+        padding: 1rem;
+        border-radius: 12px;
+        background: #e2e8f0;
+        font-size: clamp(1.4rem, 5vw, 2rem);
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        word-break: break-all;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.8rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      button {
+        border: none;
+        border-radius: 10px;
+        padding: 0.65rem 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.12s ease, opacity 0.12s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      .regen {
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      .copy {
+        background: #0f766e;
+        color: #ffffff;
+      }
+
+      .status {
+        min-height: 1.4rem;
+        margin-top: 0.9rem;
+        font-size: 0.92rem;
+        color: #0f766e;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>ランダム英数字10文字ジェネレーター</h1>
+      <p>アクセス時に自動生成し、再生成ボタンでいつでも更新できます。</p>
+      <div id="randomValue" class="value" aria-live="polite"></div>
+      <div class="actions">
+        <button id="regenButton" class="regen" type="button">再生成</button>
+        <button id="copyButton" class="copy" type="button">コピー</button>
+      </div>
+      <div id="status" class="status" aria-live="polite"></div>
+    </main>
+
+    <script>
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      const length = 10;
+
+      const randomValueElement = document.getElementById("randomValue");
+      const statusElement = document.getElementById("status");
+      const regenButton = document.getElementById("regenButton");
+      const copyButton = document.getElementById("copyButton");
+
+      function generateRandomString() {
+        let result = "";
+        for (let index = 0; index < length; index += 1) {
+          const randomIndex = Math.floor(Math.random() * chars.length);
+          result += chars[randomIndex];
+        }
+        return result;
+      }
+
+      function updateRandomValue() {
+        randomValueElement.textContent = generateRandomString();
+        statusElement.textContent = "";
+      }
+
+      async function copyToClipboard() {
+        const value = randomValueElement.textContent;
+        if (!value) {
+          statusElement.textContent = "コピーする文字列がありません。";
+          return;
+        }
+
+        try {
+          if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(value);
+          } else {
+            const textArea = document.createElement("textarea");
+            textArea.value = value;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            textArea.remove();
+          }
+          statusElement.textContent = "コピーしました。";
+        } catch (error) {
+          statusElement.textContent = "コピーに失敗しました。";
+        }
+      }
+
+      regenButton.addEventListener("click", updateRandomValue);
+      copyButton.addEventListener("click", copyToClipboard);
+
+      updateRandomValue();
+    </script>
+  </body>
+</html>
